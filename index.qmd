@@ -6,12 +6,11 @@ authors:
     email: xh231@georgetown.edu
     affiliation: Georgetown University
     corresponding: true
-df-print: kable
 title-block-banner: "#E69F0095"
 title-block-banner-color: "black"
 format:
   html:
-    df-print: kable
+    df-print: tibble
   pdf:
     # https://quarto.org/docs/reference/formats/pdf.html
     link-citations: true
