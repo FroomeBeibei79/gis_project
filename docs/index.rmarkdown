@@ -1,22 +1,13 @@
 ---
-title: "GIS Project Notebook Xingrui Huo Froome"
-subtitle: "DSAN 6750 / PPOL 6805: GIS for Spatial Data Science"
-authors:
-  - name: Xingrui Huo
-    email: xh231@georgetown.edu
-    affiliation: Georgetown University
-    corresponding: true
-df-print: kable
-title-block-banner: "#E69F0095"
-title-block-banner-color: "black"
+title: "Final Presentation"
 format:
   html:
-    df-print: kable
-  pdf:
-    # https://quarto.org/docs/reference/formats/pdf.html
-    link-citations: true
-prefer-html: true
+    code-fold: true
+    self-contained: true
+editor: visual
 ---
+
+
 
 # Traffic Noise Analysis in New York City - 2023
 
@@ -51,6 +42,8 @@ We will begin with data cleaning to ensure we are working with accurate and rele
 
 ## Progress
 
+
+
 ```{r, echo=FALSE}
 # Package Loading
 library(tidyverse)
@@ -65,7 +58,11 @@ library(raster)
 library(dplyr)
 ```
 
+
+
 # Step 1: Data Cleaning and Pre-processing
+
+
 
 ```{r}
 noise_data <- read_csv("data/Noise_Complaint.csv")
@@ -95,7 +92,11 @@ traffic_data_aggregated <- traffic_data_2023 %>%
   summarise(total_volume = sum(Vol, na.rm = TRUE), .groups = "drop")
 ```
 
+
+
 Filtering and Pre-processing Noise Data
+
+
 
 ```{r}
 vehicle_noise_data_2023 <- noise_data %>%
@@ -121,11 +122,15 @@ vehicle_noise_data_2023 <- noise_data %>%
 
 ```
 
+
+
 # Step 2: Data Integration and Merging
 
 Since the traffic volume data does not have separate latitude and longitude columns but instead contains route descriptions, and the vehicle noise data does have coordinates, we can follow through with a geospatial join using a proximity-based approach.
 
 Convert Traffic Volume Data to an sf Object and convert Noise Complaint Data to Spatial Data Frame
+
+
 
 ```{r}
 # Rename and convert traffic data to sf object
@@ -153,14 +158,22 @@ merged_data <- merged_data %>%
 
 ```
 
+
+
 # Step 3: General Summary Stats and EDAs
+
+
 
 ```{r}
 str(merged_data)
 summary(merged_data)
 ```
 
+
+
 Summary Statistics for Key Variables
+
+
 
 ```{r}
 borough_summary <- merged_data %>%
@@ -180,7 +193,11 @@ hourly_summary <- merged_data %>%
 print(hourly_summary)
 ```
 
+
+
 Noise Complaints by Borough
+
+
 
 ```{r}
 ggplot(merged_data, aes(x = Boro, fill = Boro)) +
@@ -194,7 +211,11 @@ ggplot(merged_data, aes(x = Boro, fill = Boro)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+
+
 Noise Complaints by Hour of the Day
+
+
 
 ```{r}
 # Plot the number of noise complaints by hour of the day
@@ -215,17 +236,25 @@ ggplot(merged_data, aes(x = hour)) +
 
 ```
 
+
+
 Spatial Distribution of Noise Complaints
+
+
 
 ```{r}
 mapview(vehicle_noise_data_2023_sf, zcol = "Borough")
 ```
+
+
 
 # Step 4: Assessing the Veracity of the Hypothesis Using Formal Hypothesis Evaluation Approaches
 
 #### Step 4.1: Observed Intensity Function
 
 **Traffic volume data in New York City**
+
+
 
 ```{r}
 traffic_data_aggregated <- traffic_data_aggregated %>%
@@ -248,7 +277,11 @@ leaflet() %>%
   )
 ```
 
+
+
 **Interactive Visualization of the KDE**
+
+
 
 ```{r}
 vehicle_noise_data_2023_sf <- st_transform(vehicle_noise_data_2023_sf, 2263)
@@ -280,7 +313,11 @@ leaflet() %>%
             position = "bottomright")
 ```
 
+
+
 **Compute Observed Intensity Function Using Kernel Density Estimation (KDE)**
+
+
 
 ```{r}
 coords <- st_coordinates(vehicle_noise_data_2023_sf)
@@ -291,7 +328,11 @@ plot(intensity_noise, main = "Observed Intensity Function of Noise Complaints (2
 
 ```
 
+
+
 **Kernel Density Estimation (KDE) of Noise Complaints**
+
+
 
 ```{r}
 
@@ -316,15 +357,23 @@ ggplot() +
 
 ```
 
+
+
 #### Step 4.2: Monte Carlo Simulations of Null Hypothesis
 
 **Monte Carlo Simulations of the Null Hypothesis**
+
+
 
 ```{r}
 simulations <- replicate(999, rpoispp(lambda = intensity(noise_ppp), win = win))
 ```
 
+
+
 **Observed Intensity vs Simulated Patterns**
+
+
 
 ```{r}
 ggplot() +
@@ -346,7 +395,11 @@ ggplot() +
 
 ```
 
+
+
 **Overlay Simulated Patterns on Observed Intensity Function**
+
+
 
 ```{r}
 plot(intensity_noise, main = "Observed Noise Complaint Intensity vs Simulated Patterns")
@@ -356,15 +409,21 @@ for (i in 1:5) {
 }
 ```
 
+
+
 #### Step 4.4: Compute Ripley's K-Function for Spatial Patterns
 
 **Compute Ripley's K-Function**
+
+
 
 ```{r}
 K_noise <- Kest(noise_ppp)
 env <- envelope(noise_ppp, Kest, nsim = 10, rank = 1)
 plot(env, main = "Ripley's K-Function for Noise Complaints (Observed vs Null)")
 ```
+
+
 
 The observed K-function (K_obs) lies significantly above the theoretical K-function (K_theo) at all distances. This indicates that there are more noise complaints than expected under complete randomness, which implies clustering.
 
