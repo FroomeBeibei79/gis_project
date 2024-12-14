@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 manuscript:
-  article: docs/index.qmd
+  article: index.qmd
 
 format:
   html:
