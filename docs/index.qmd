@@ -4,6 +4,7 @@ format:
   html:
     code-fold: true
     self-contained: true
+    embed-resources: true
 editor: visual
 ---
 
