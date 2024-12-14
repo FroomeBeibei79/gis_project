@@ -1,2 +1,4 @@
 *.rds
 /.quarto/
+docs/data/road_map.geojson
+docs/data/traffic_volume_counts.csv
